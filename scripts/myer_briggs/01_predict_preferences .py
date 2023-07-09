@@ -19,9 +19,10 @@ from sklearn.model_selection import train_test_split
 
 MODEL_NAME = 'distilbert-base-uncased-finetuned-sst-2-english'
 BATCH_SIZE = 64
-N_EPOCHS = 10
-SAMPLE_SIZE = 4000
+N_EPOCHS = 3
+SAMPLE_SIZE = 2000
 
+print('Start')
 # get data
 df = pd.read_csv("data/myer_briggs/raw/mbti_1.csv")
 
@@ -36,7 +37,7 @@ for i in ['I','N','T','J','E','S','F','P']:
     df_unravelled[i] = [i in c for c in df_unravelled.type]
 
 # predict every preference
-for TYPE in ['I','N','T','J','E','S','F','P']:
+for TYPE in ['T','J','F','P']:
 
     df_sample = df_unravelled.sample(SAMPLE_SIZE)
 

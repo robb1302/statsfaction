@@ -1,7 +1,9 @@
 
 
-- read dataset
-- find nlp modell
+- read dataset done 
+- find nlp modell done
+- predict everything I N T J 
+- find structure for scripts, notebooks and so on
 
 
 
