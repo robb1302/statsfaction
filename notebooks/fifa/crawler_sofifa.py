@@ -22,10 +22,10 @@ FIFA = "13"
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
 }
- 
+from tqdm import tqdm
 
 data = DataFrame(columns=columns)
-for offset in range(300):
+for offset in tqdm(range(10)):
     url = base_url + str(offset*80)+f"&r={FIFA}0001&set=true"
     source_code = requests.get(url,headers=headers)
     plain_text = source_code.text
@@ -38,7 +38,7 @@ for offset in range(300):
         nationality = td[1].find('a').get('title')
         flag_img = td[1].find('img').get('data-src')
         name = td[1].find('div').text
-        age =soup.find('td', class_='col col-ae').text
+        age = td[2].text
         overall = td[3].text.strip()
         potential = td[4].text.strip()
         club = td[5].find('a').text
@@ -51,7 +51,7 @@ for offset in range(300):
         player_data.columns = columns
         data = pd.concat([data,player_data],axis=0)
     offset+=1
-    data.to_csv('full_player_data.csv', encoding='utf-8')
+    data.to_csv(f'full_player_data_{FIFA}.csv', encoding='utf-8')
     if (offset % 20 == 0):
         print(offset)
 print("Done")
