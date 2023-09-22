@@ -20,7 +20,7 @@ columns = ['ID', 'Name', 'Age', 'Photo', 'Nationality', 'Flag', 'Overall', 'Pote
            'Club Logo', 'Value', 'Wage', 'Special']
 FIFA = "16"
 
-for FIFA in ["13","14","15"]:
+for FIFA in ["16"]:
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
     }
@@ -38,7 +38,7 @@ for FIFA in ["13","14","15"]:
             td = row.findAll('td')
             picture = td[0].find('img').get('data-src')
             pid = td[0].find('img').get('id')
-            nationality = td[1].find('a').get('title')
+            nationality =  td[1].find('img', class_='flag')['title']
             flag_img = td[1].find('img').get('data-src')
             name = td[1].find('div').text
             age = td[2].text
