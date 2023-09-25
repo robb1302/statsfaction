@@ -1,3 +1,7 @@
+"""
+deprecated
+This Script  downloads the ID and standard data of the Players in FIFA
+"""
 # Initial imports
 import numpy as np
 import pandas as pd 

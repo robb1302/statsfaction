@@ -1,3 +1,8 @@
+"""
+This Script clicks through the fminside page and gets the player ids. After that it downloads the attributes with the IDs
+"""
+
+
 import argparse
 import os
 import sys
@@ -12,7 +17,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select, WebDriverWait
 from tqdm import tqdm
-
 
 
 pd.set_option('display.max_columns', 500)
@@ -90,7 +94,7 @@ def main(database_version="FM 23 (23.4.0)"):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
     }
 
-    from sport_analytics.crawler.fm import download_player_id
+    from src.sport_analytics.crawler.fm import download_player_id
     source_code = requests.get(url, headers=headers)
     plain_text = source_code.text
     player_list = download_player_id(html_content)

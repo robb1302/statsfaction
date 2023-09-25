@@ -1,3 +1,8 @@
+"""
+Deprecated
+This Script  downloads the attributes of the Players in FIFA
+"""
+
 # Initial imports
 import random
 import urllib.request
