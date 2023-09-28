@@ -1,5 +1,5 @@
 """
-This Script  downloads the standard data of the Players in FIFA
+This Script  downloads the ID data of the Players in FIFA
 """
 
 

@@ -29,3 +29,41 @@ def download_player_id(html_content,columns=None):
     data = data.drop_duplicates()
        
     return data
+
+def flatten_dict(data):
+
+    flat_data = []
+    for category, attributes in data.items():
+        for attribute, value in attributes.items():
+            flat_data.append({'Attribute': attribute, 'Value': value})
+    return flat_data
+
+
+def extract_attributes(soup, id):
+    block_quarters = soup.find_all('div', class_='block-quarter')
+
+    skills = {}
+
+    for block in block_quarters:
+        try:
+            category_name = block.find('h5').text.strip()
+        except:
+            category_name = ""
+
+        if category_name.lower() in ['attacking', 'movement', 'skill', 'mentality', 'defending', 'goalkeeping', 'power']:
+            skill_elements = block.find_all('li')
+            skills_in_category = {}
+
+            for skill_element in skill_elements:
+                rating = skill_element.find('span', class_='bp3-tag').text.strip()
+                skill_name = skill_element.find('span', role='tooltip').text.strip()
+
+                skills_in_category[skill_name] = rating
+
+            skills[category_name] = skills_in_category
+
+    skills['ID'] = {'ID':id}
+    attributes = pd.DataFrame(flatten_dict(skills))
+    attributes = attributes.set_index('Attribute')
+
+    return attributes
