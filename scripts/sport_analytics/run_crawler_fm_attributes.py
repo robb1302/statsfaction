@@ -59,8 +59,9 @@ def main(database_version):
     main_attributes = main_attributes.T
     main_attributes = main_attributes.set_index("Player ID")
 
+    merged_data =  pd.concat([player_list.set_index("Player ID"),main_attributes],axis=1)
 
-    pd.concat([player_list.set_index("Player ID"),main_attributes],axis=1).to_csv(f"data/sport_analytics/processed/{database_version}.csv")
+    merged_data.to_csv(f"data/sport_analytics/processed/{database_version}.csv")
     print('done')
 
 if __name__ == "__main__":

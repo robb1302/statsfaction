@@ -60,7 +60,7 @@ def main(database_version="FM 23 (23.4.0)"):
     # Wait for a short moment to allow the page to update
     time.sleep(2)
 
-    for i in tqdm(range(2)):  # Perform 3000 clicks
+    for i in tqdm(range(300)):  # Perform 3000 clicks
         j = 0
         while True:  # Retry up to 3 times if the button is not clickable
             try:
@@ -94,6 +94,7 @@ def main(database_version="FM 23 (23.4.0)"):
     source_code = requests.get(url, headers=headers)
     print("start download player")
     player_list = download_player_id(html_content)
+    player_list = player_list.drop_duplicates()
     player_list.to_csv(f"data/sport_analytics/raw/player_list_fm_{database_version}.csv")
 
     print("Shutting down")

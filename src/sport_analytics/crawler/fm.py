@@ -34,8 +34,19 @@ def download_player_id(html_content):
         
         name = player_ul.find('span', class_='name').a.get('title')
         player_id = player_ul.find('span', class_='name').a.get('href')
+        UID = extract_id(player_id)
         age = int(player_ul.find('li', class_='age').text)
+        try:
+            wage = player_ul.find('li', class_='wage').text
+        except:
+            wage = 'None'
         rating = int(player_ul.find('li', class_='rating').span.text)
+        url = extract_id(player_id)
+        # Use regular expressions to extract the ID from the URL
+        import re
+        match = re.search(r'/(\d+)\.png', url)
+        
+        
         potential_text = player_ul.find('li', class_='potential').span.text 
         if potential_text  == "":
             potential = 100
@@ -47,7 +58,9 @@ def download_player_id(html_content):
         player_info = {
             'Name': name,
             'Player ID': player_id,
+            'UID':UID,
             'Age': age,
+            'Wage':wage,
             'Rating': rating,
             'Potential': potential,
             'Position': position
@@ -58,3 +71,19 @@ def download_player_id(html_content):
     
     return pd.DataFrame(players_data)
 
+def extract_id(input_string):
+    # Find the first "/" from the right
+    last_slash_index = input_string.rfind('/')
+
+    if last_slash_index != -1:
+        # Find the first "-" after the last "/"
+        first_dash_index = input_string[last_slash_index:].find('-')
+
+        if first_dash_index != -1:
+            # Extract the ID
+            player_id = input_string[last_slash_index + 1:last_slash_index + first_dash_index]
+            return player_id
+        else:
+            return None  # Dash not found after the last slash
+    else:
+        return None  # Last slash not found
