@@ -40,18 +40,20 @@ def download_player_id(html_content):
             wage = player_ul.find('li', class_='wage').text
         except:
             wage = 'None'
+            pass
         rating = int(player_ul.find('li', class_='rating').span.text)
-        url = extract_id(player_id)
+
+        try:
+            value = str(player_ul.find('li', class_='value').text)
+        except:
+            value = 'None'
+            pass
         # Use regular expressions to extract the ID from the URL
-        import re
-        match = re.search(r'/(\d+)\.png', url)
         
-        
-        potential_text = player_ul.find('li', class_='potential').span.text 
-        if potential_text  == "":
-            potential = 100
-        else:
-            potential = int(player_ul.find('li', class_='potential').span.text)
+        potential_html = player_ul.find('li', class_='potential')
+       
+        potential, dynamic =   get_potential(potential_html) 
+
         positions_list = [i.text for i in player_ul.find_all('span', {'class': 'position', 'title': 'Natural'})]
         position = ', '.join(set(positions_list))
         
@@ -60,9 +62,11 @@ def download_player_id(html_content):
             'Player ID': player_id,
             'UID':UID,
             'Age': age,
+            'Value': value,
             'Wage':wage,
             'Rating': rating,
             'Potential': potential,
+            'Dynamic_Potential':dynamic,
             'Position': position
         }
         
@@ -70,6 +74,38 @@ def download_player_id(html_content):
         players_data.append(player_info)
     
     return pd.DataFrame(players_data)
+
+
+def get_potential(potential_li):
+
+    span_element = potential_li.find('span')
+
+    if not span_element:
+        return None, None  # Return None if the <span> element is not found
+
+    class_attribute = span_element.get('class', [])
+
+    if 'dynamic' not in class_attribute:
+        pot = int(span_element.text)
+
+        pot_art = False
+    else:
+        # If 'dynamic' is not in the class, determine potential based on class names
+        if 'superstar' in class_attribute:
+            pot = 100
+        elif 'excellent' in class_attribute:
+            pot = 90
+        elif 'good' in class_attribute:
+            pot = 80
+        elif 'decent' in class_attribute:
+            pot = 70
+        else:
+            pot = 60
+        pot_art = True
+
+    return pot, pot_art
+
+
 
 def extract_id(input_string):
     # Find the first "/" from the right

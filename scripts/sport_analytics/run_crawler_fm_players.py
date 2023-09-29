@@ -12,7 +12,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select, WebDriverWait
 from tqdm import tqdm
-
+import warnings
+warnings.filterwarnings('ignore')
 
 
 pd.set_option('display.max_columns', 500)
@@ -60,7 +61,7 @@ def main(database_version="FM 23 (23.4.0)"):
     # Wait for a short moment to allow the page to update
     time.sleep(2)
 
-    for i in tqdm(range(300)):  # Perform 3000 clicks
+    for i in tqdm(range(400)):  # Perform 3000 clicks
         j = 0
         while True:  # Retry up to 3 times if the button is not clickable
             try:
@@ -76,7 +77,7 @@ def main(database_version="FM 23 (23.4.0)"):
                 with open(f'data/sport_analytics/raw/{database_version}.txt', 'w', encoding='utf-8') as file:
                     file.write(html_content)
                 print(f"Retry failed: {i}")
-                time.sleep(3)  # Wait for 2 seconds before retrying
+                # time.sleep(3)  # Wait for 2 seconds before retrying
 
     print('Parse')
 
@@ -91,7 +92,7 @@ def main(database_version="FM 23 (23.4.0)"):
     }
 
     from src.sport_analytics.crawler.fm import download_player_id
-    source_code = requests.get(url, headers=headers)
+ 
     print("start download player")
     player_list = download_player_id(html_content)
     player_list = player_list.drop_duplicates()
@@ -105,7 +106,7 @@ if __name__ == "__main__":
     # FM 22 (22.1.0)
     # FM 21 (21.0.0)
     parser = argparse.ArgumentParser(description="FM Inside Web Scraper")
-    parser.add_argument("--database_version", type=str, help="Database version to select, e.g., 'FM 22 (22.1.0)'",default='FM 22 (22.1.0)')
+    parser.add_argument("--database_version", type=str, help="Database version to select, e.g., 'FM 22 (22.1.0)'",default='FM 23 (23.4.0)')
     find_and_append_module_path()
 
     args = parser.parse_args()
