@@ -1,8 +1,3 @@
-"""
-This Script clicks through the fminside page and gets the player ids. After that it downloads the attributes with the IDs
-"""
-
-
 import argparse
 import os
 import sys
@@ -17,6 +12,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select, WebDriverWait
 from tqdm import tqdm
+
 
 
 pd.set_option('display.max_columns', 500)
@@ -64,7 +60,7 @@ def main(database_version="FM 23 (23.4.0)"):
     # Wait for a short moment to allow the page to update
     time.sleep(2)
 
-    for i in tqdm(range(400)):  # Perform 3000 clicks
+    for i in tqdm(range(2)):  # Perform 3000 clicks
         j = 0
         while True:  # Retry up to 3 times if the button is not clickable
             try:
@@ -77,15 +73,15 @@ def main(database_version="FM 23 (23.4.0)"):
             except Exception as e:
                 j = j+1
                 html_content = driver.page_source
-                with open(f'temp.txt', 'w', encoding='utf-8') as file:
+                with open(f'data/sport_analytics/raw/{database_version}.txt', 'w', encoding='utf-8') as file:
                     file.write(html_content)
                 print(f"Retry failed: {i}")
-                time.sleep(2)  # Wait for 2 seconds before retrying
+                time.sleep(3)  # Wait for 2 seconds before retrying
 
     print('Parse')
 
     html_content = driver.page_source
-    with open(f'page_source.txt', 'w', encoding='utf-8') as file:
+    with open(f'data/sport_analytics/raw/{database_version}.txt', 'w', encoding='utf-8') as file:
         file.write(html_content)
 
     # Perform any additional actions you need on the loaded content
@@ -96,9 +92,9 @@ def main(database_version="FM 23 (23.4.0)"):
 
     from src.sport_analytics.crawler.fm import download_player_id
     source_code = requests.get(url, headers=headers)
-    plain_text = source_code.text
+    print("start download player")
     player_list = download_player_id(html_content)
-    player_list.to_csv("player_list_fm_22.csv")
+    player_list.to_csv(f"data/sport_analytics/raw/player_list_fm_{database_version}.csv")
 
     print("Shutting down")
     driver.quit()  # Don't forget to quit the driver when you're done

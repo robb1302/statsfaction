@@ -26,7 +26,7 @@ def download_player_id(html_content):
     
     # Initialize a list to store player data
     players_data = []
-    
+    print('extract attributes...')    
     # Loop through each player <ul> element and extract the desired information
     for player_ul in tqdm(player_ul_elements):
         # Extract player data here
