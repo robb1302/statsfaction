@@ -70,7 +70,7 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description="FIFA Player Data Scraper")
     parser.add_argument('--fifa_versions', default=DEFAULT_FIFA_VERSIONS, help='Comma-separated FIFA versions (default: "13")')
-    parser.add_argument('--offsets', type=int, default=DEFAULT_OFFSETS, help='Number of offsets to scrape (default: 300)')
+    # parser.add_argument('--offsets', type=int, default=DEFAULT_OFFSETS, help='Number of offsets to scrape (default: 300)')
     args = parser.parse_args()
     
     from src.sport_analytics.crawler.fifa import extract_attributes
