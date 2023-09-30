@@ -39,7 +39,7 @@ def main(fifa_versions,offsets):
     # Define the base URL and headers
     base_url = "https://sofifa.com/players?offset="
     fifa_id_columns = ['ID', 'Name', 'Age', 'Photo', 'Nationality', 'Flag', 'Overall', 'Potential', 'Club',
-                    'Club Logo', 'Value', 'Wage', 'Special']
+                    'Club Logo', 'Value', 'Wage', 'Special','Position']
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
     }
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="FIFA Player Data Scraper")
     
     # Define command-line arguments with default values
-    parser.add_argument('--fifa_versions', default=DEFAULT_FIFA_VERSIONS, help='Comma-separated FIFA versions (default: "23,24")')
+    parser.add_argument('--fifa_versions', default=DEFAULT_FIFA_VERSIONS, help='Comma-separated FIFA versions (default: "24")')
     # parser.add_argument('--offsets', type=int, default=DEFAULT_OFFSETS, help='Number of offsets to scrape (default: 300)')
     
     # Parse the command-line arguments
