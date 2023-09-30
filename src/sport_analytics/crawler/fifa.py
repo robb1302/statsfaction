@@ -21,8 +21,16 @@ def download_player_id(html_content,columns=None):
         value = td[6].text.strip()
         wage = td[7].text.strip()
         special = td[8].text.strip()
+
+        # Find the <span> elements with class "pos" inside the <td> with class "col-name"
+        positions = [span.text for span in row.select('td.col-name span.pos')]
+
+        # Join the positions into a single string
+        positions_str = ','.join(positions)
+
+
         player_data = DataFrame([[pid, name, age, picture, nationality, flag_img, overall, 
-                                potential, club, club_logo, value, wage, special]])
+                                potential, club, club_logo, value, wage, special,positions_str]])
         player_data.columns = columns
         data = pd.concat([data, player_data], axis=0)
 
