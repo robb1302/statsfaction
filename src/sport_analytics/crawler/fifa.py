@@ -1,7 +1,10 @@
 from pandas import DataFrame, Series
 from bs4 import BeautifulSoup
 import pandas as pd
-
+import requests
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
+}
 def download_player_id(html_content,columns=None):
     data = DataFrame()    
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -74,4 +77,11 @@ def extract_attributes(soup, id):
     attributes = pd.DataFrame(flatten_dict(skills))
     attributes = attributes.set_index('Attribute')
 
-    return attributes
+    return attributes.T
+
+def get_fifa_soup(id,FIFA):
+    url = f'https://sofifa.com/player/{str(id)}?r={FIFA}0001&set=true'
+    source_code = requests.get(url, headers=headers)
+    plain_text = source_code.text
+    soup = BeautifulSoup(plain_text)
+    return soup

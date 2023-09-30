@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 from os import listdir
-
+from tqdm import tqdm
 import pandas as pd
 
 # this script merges data
@@ -33,18 +33,16 @@ def main(fifa_versions):
 
     fifa_versions = args.fifa_versions.split(',')
 
-    for fifa in fifa_versions:
+    for fifa in tqdm(fifa_versions):
+        print("FIFA",fifa)
         df_player_ids = pd.read_csv(f"data/sport_analytics/raw/full_player_data_{fifa}.csv",index_col=0)
-        df_attributes = pd.read_csv(f'data/sport_analytics/raw/FIFA_{fifa}_attributes.csv')  
+        df_attributes = pd.read_csv(f'data/sport_analytics/raw/FIFA_{fifa}.csv')  
         
         try:
             import config as CONFIG
-            df_attributes = df_attributes.T.reset_index(drop=True)
-            features =  df_attributes.loc[0]
-            df_attributes.columns = features
-            df_attributes = df_attributes.drop(0,errors='ignore')
-            df_attributes = df_attributes.set_index('ID')
+            df_attributes = df_attributes.drop_duplicates()
 
+            df_attributes = df_attributes.set_index('ID')
             df_player_ids = df_player_ids.set_index('ID')
 
             df_merge = pd.concat([df_player_ids,df_attributes],axis=1)
@@ -58,8 +56,8 @@ def main(fifa_versions):
 
 
 if __name__ == "__main__":
-    DEFAULT_FIFA_VERSIONS = "13"
-    
+    DEFAULT_FIFA_VERSIONS = "13,14,15,16,17,18,19,20,21,22,23,24"
+    DEFAULT_FIFA_VERSIONS = "12"
     find_and_append_module_path()
     
     parser = argparse.ArgumentParser(description="FIFA Player Data Scraper")

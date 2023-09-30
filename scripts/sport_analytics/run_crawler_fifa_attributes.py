@@ -13,7 +13,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
-
+import time
 warnings.filterwarnings('ignore')
 
 
@@ -49,21 +49,35 @@ def main(fifa_versions):
         for _, row in tqdm(data.iterrows(), total=data.shape[0]):
             try:
                 id = row["ID"]
-                url = f'https://sofifa.com/player/{str(id)}?r={FIFA}0001&set=true'
-                source_code = requests.get(url, headers=headers)
-                plain_text = source_code.text
-                soup = BeautifulSoup(plain_text)
+                counter = 0
+                attributes = pd.DataFrame()
+                
+                while (attributes.shape[1]<=1):
+                    
+                    soup = get_fifa_soup(id = id,FIFA=FIFA)
+                    attributes = extract_attributes(soup, id)
+                    counter = counter + 1
+                    
+                    if counter>1:
+                        # print("something went wrong")
+                        time.sleep(2)
+                if counter >1:
+                    print(id,counter)
+               
+                master_data = pd.concat([attributes, master_data], axis=0)        
+               
+                if attributes.empty:
+                    print('Failed',id)
 
-                attributes = extract_attributes(soup, id)
-                master_data = pd.concat([attributes, master_data], axis=1)
             except:
-                master_data.to_csv(f"data/sport_analytics/raw/FIFA_{FIFA}_attributes.csv")
+                master_data = master_data.reset_index(drop=True)
+                master_data.to_csv(f"data/sport_analytics/raw/FIFA_{FIFA}.csv")
 
-
-        master_data.to_csv(f"data/sport_analytics/raw/FIFA_{FIFA}_attributes.csv")
+        master_data = master_data.reset_index(drop=True)
+        master_data.to_csv(f"data/sport_analytics/raw/FIFA_{FIFA}.csv")
 
 if __name__ == "__main__":
-    DEFAULT_FIFA_VERSIONS = "13"
+    DEFAULT_FIFA_VERSIONS = "12"
     DEFAULT_OFFSETS = 300
     
     find_and_append_module_path()
@@ -73,7 +87,7 @@ if __name__ == "__main__":
     # parser.add_argument('--offsets', type=int, default=DEFAULT_OFFSETS, help='Number of offsets to scrape (default: 300)')
     args = parser.parse_args()
     
-    from src.sport_analytics.crawler.fifa import extract_attributes
+    from src.sport_analytics.crawler.fifa import extract_attributes,get_fifa_soup
     
     main(fifa_versions=args.fifa_versions)
 

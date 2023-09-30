@@ -50,6 +50,7 @@ def main(fifa_versions,offsets):
     
     # Iterate through FIFA versions
     for FIFA in fifa_versions:
+        print("#######FIFA",FIFA,"#######")
         data = DataFrame(columns=fifa_id_columns)
 
         for offset in tqdm(range(offsets)):
@@ -68,8 +69,8 @@ def main(fifa_versions,offsets):
 if __name__ == "__main__":
 
     # Define default values
-    DEFAULT_FIFA_VERSIONS = "18,24"
-    DEFAULT_OFFSETS = 300
+    DEFAULT_FIFA_VERSIONS = "12"
+    DEFAULT_OFFSETS = 10
 
     find_and_append_module_path()
     # Create an argument parser
@@ -85,4 +86,4 @@ if __name__ == "__main__":
 
     from src.sport_analytics.crawler.fifa import download_player_id
 
-    main(fifa_versions=args.fifa_versions    ,offsets=DEFAULT_OFFSETS)
+    main(fifa_versions=DEFAULT_FIFA_VERSIONS    ,offsets=DEFAULT_OFFSETS)
