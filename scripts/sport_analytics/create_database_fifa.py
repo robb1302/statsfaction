@@ -7,7 +7,7 @@ dataframes = []
 # Loop through the file paths and load each file into a DataFrame
 for file_path in fifa_files:
     dataframe = pd.read_csv(f"data/sport_analytics/processed/{file_path}")
-    dataframe['year'] = int(file_path.replace('FIFA','').replace('_official_data.csv',''))+1999
+    dataframe['FIFA'] = int(file_path.replace('FIFA','').replace('_official_data.csv',''))+2000
     dataframes.append(dataframe)
 
 # Combine all DataFrames into one

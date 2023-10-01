@@ -37,20 +37,22 @@ def main(database_version):
     print("download attributes")
     for player_url in tqdm(player_list["Player ID"]):
         try:
-            # Create a BeautifulSoup object
-            url =  f"https://fminside.net/{player_url}"
-            response = requests.get(url,headers=headers)    
-            html_content = response.text
-            soup = BeautifulSoup(html_content, 'html.parser')
-
-            # Find all <tr> elements with an "id" attribute
-            tr_elements = soup.find_all('tr', id=True)
-
-            # Iterate through the <tr> elements
             attributes = pd.Series()
-            attributes["Player ID"] = player_url
-            for tr in  tr_elements:
-                attributes[tr['id']] = tr.findAll()[2].text
+            while len(attributes)<2:
+                # Create a BeautifulSoup object
+                url =  f"https://fminside.net/{player_url}"
+                response = requests.get(url,headers=headers)    
+                html_content = response.text
+                soup = BeautifulSoup(html_content, 'html.parser')
+
+                # Find all <tr> elements with an "id" attribute
+                tr_elements = soup.find_all('tr', id=True)
+
+                # Iterate through the <tr> elements
+            
+                attributes["Player ID"] = player_url
+                for tr in  tr_elements:
+                    attributes[tr['id']] = tr.findAll()[2].text
 
             main_attributes = pd.concat([pd.DataFrame(attributes),main_attributes],axis=1)
         except:
@@ -69,7 +71,7 @@ if __name__ == "__main__":
     # FM 22 (22.1.0)
     # FM 21 (21.0.0)
     parser = argparse.ArgumentParser(description="FM Inside Web Scraper")
-    parser.add_argument("--database_version", type=str, help="Database version to select, e.g., 'FM 22 (22.1.0)'",default='FM 22 (22.1.0)')
+    parser.add_argument("--database_version", type=str, help="Database version to select, e.g., 'FM 22 (22.1.0)'",default="FM 22 (22.1.0)")
     find_and_append_module_path()
 
     args = parser.parse_args()

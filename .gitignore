@@ -3,5 +3,5 @@ __pycache__
 .venv
 .metadata
 model
-
+chromedriver.exe
 experiements/*

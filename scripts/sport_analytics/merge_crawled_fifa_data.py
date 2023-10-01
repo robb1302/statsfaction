@@ -36,17 +36,26 @@ def main(fifa_versions):
     for fifa in tqdm(fifa_versions):
         print("FIFA",fifa)
         df_player_ids = pd.read_csv(f"data/sport_analytics/raw/full_player_data_{fifa}.csv",index_col=0)
+        df_player_ids["ID"] = df_player_ids["ID"].astype('int')
         df_attributes = pd.read_csv(f'data/sport_analytics/raw/FIFA_{fifa}.csv')  
+        df_attributes["ID"] = df_attributes["ID"].astype('int')
         
         try:
             import config as CONFIG
             df_attributes = df_attributes.drop_duplicates()
+            df_player_ids = df_player_ids.drop_duplicates()
 
             df_attributes = df_attributes.set_index('ID')
             df_player_ids = df_player_ids.set_index('ID')
 
             df_merge = pd.concat([df_player_ids,df_attributes],axis=1)
             df_merge = df_merge.rename(CONFIG.FEATURE_MAPPING,axis=1)
+            
+            drop_nas = (df_merge.drop('Club',axis=1).isna().T.sum()>0)
+            if drop_nas.sum()>0:
+                print("Fifa",drop_nas.sum())
+                df_merge = df_merge[~drop_nas]
+
             df_merge.to_csv(f"data/sport_analytics/processed/FIFA{fifa}_official_data.csv")
         except:
             print('Error while merging',fifa)
@@ -56,8 +65,8 @@ def main(fifa_versions):
 
 
 if __name__ == "__main__":
-    DEFAULT_FIFA_VERSIONS = "13,14,15,16,17,18,19,20,21,22,23,24"
-    DEFAULT_FIFA_VERSIONS = "12"
+    DEFAULT_FIFA_VERSIONS = "17"
+    # DEFAULT_FIFA_VERSIONS = "12"
     find_and_append_module_path()
     
     parser = argparse.ArgumentParser(description="FIFA Player Data Scraper")
