@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
     # Define default values
     DEFAULT_FIFA_VERSIONS = "12"
-    DEFAULT_OFFSETS = 10
+    DEFAULT_OFFSETS = 300
 
     find_and_append_module_path()
     # Create an argument parser
