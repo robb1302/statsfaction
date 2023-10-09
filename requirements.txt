@@ -2,3 +2,5 @@ streamlit
 google-cloud-firestore
 pandas
 numpy
+transformers
+scipy
