@@ -1,6 +1,12 @@
 streamlit
-google-cloud-firestore
+ipykernel
 pandas
 numpy
-transformers
+shap
 scipy
+xgboost
+scikit-learn
+tqdm
+lightgbm
+seaborn
+beautifulsoup4
