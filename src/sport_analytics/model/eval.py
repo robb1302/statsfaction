@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+from sklearn.preprocessing import StandardScaler
+import shap
+import numpy as np
 
 
 def plot_correlation_heatmap(df):
@@ -77,3 +80,22 @@ def plot_feature_importance(model, title=None, top_n=10):
     plt.show()
     return list(top_features['names'].values)
 
+
+def individual_shap_valuess(values, attributes,player_index):
+    import pandas as pd
+    from sklearn.preprocessing import MinMaxScaler
+
+    shaps = pd.DataFrame(values,columns=attributes,index = player_index)
+    # Initialize the MinMaxScaler
+    scaler = StandardScaler()
+
+    # Fit and transform the DataFrame using the scaler
+    shaps = pd.DataFrame(scaler.fit_transform(shaps), columns=attributes,index=player_index).round(3)
+    shaps["summe_shap"] = shaps.T.sum()
+    return shaps
+
+def get_shap_plot_indv(skills,explainer):
+    print(skills.index.values)
+    shap_indv = np.round(explainer.shap_values(skills)[1],2)[0]
+    base_line = explainer.expected_value[1]
+    shap.plots.force(base_line, shap_indv, skills, matplotlib = True)
