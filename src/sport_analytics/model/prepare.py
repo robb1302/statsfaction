@@ -11,4 +11,5 @@ def add_features_raw_datadf_raw(df_raw):
     df_raw = pd.merge(df_raw.reset_index(), encoded_pos, left_on='best_position', right_on='best_position', how='inner')
     df_raw = df_raw.set_index(['ID','Name','FIFA'])
     df_raw['Defense'] =  df_raw['Defensive awareness'].fillna(0)+df_raw['Marking'].fillna(0)
+    df_raw["overall_age_ratio"] = df_raw.Overall/(df_raw.Age**2)
     return df_raw
