@@ -12,4 +12,8 @@ def add_features_raw_datadf_raw(df_raw):
     df_raw = df_raw.set_index(['ID','Name','FIFA'])
     df_raw['Defense'] =  df_raw['Defensive awareness'].fillna(0)+df_raw['Marking'].fillna(0)
     df_raw["overall_age_ratio"] = df_raw.Overall/(df_raw.Age**2)
+    df_raw['youth_player'] = df_raw.Age<20
+    for attribut in ['Reactions','Stamina','Positioning','Vision','Stamina']:
+        df_raw[f'age_based_{attribut}'] = df_raw[attribut] - df_raw.groupby(['FIFA','Age'])[attribut].transform('mean')
+        # df_raw[f'{attribut}'] = df_raw[attribut] - df_raw.groupby(['FIFA','Age'])[attribut].transform('mean')
     return df_raw

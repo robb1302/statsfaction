@@ -96,6 +96,13 @@ def individual_shap_valuess(values, attributes,player_index):
 
 def get_shap_plot_indv(skills,explainer):
     print(skills.index.values)
-    shap_indv = np.round(explainer.shap_values(skills)[1],2)[0]
-    base_line = explainer.expected_value[1]
+    shap_skills = explainer.shap_values(skills)
+    if len(shap_skills)!=1:
+        shap_skills = shap_skills[1]
+    shap_indv = np.round(shap_skills,2)[0]
+    if not type(explainer.expected_value) == np.float32:
+        base_line = explainer.expected_value[1]
+    else:
+        base_line = explainer.expected_value
     shap.plots.force(base_line, shap_indv, skills, matplotlib = True)
+    return pd.DataFrame(shap_indv,index=skills.columns,columns=["shap"])
