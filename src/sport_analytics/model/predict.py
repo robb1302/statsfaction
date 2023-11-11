@@ -30,18 +30,22 @@ def analyze_individual_ID(ID,df_raw,attributes,model,scaler):
 
     df_raw = add_features_raw_datadf_raw(df_raw)
     df_raw = df_raw[df_raw.index.get_level_values('ID') == ID]   
-    explainer = shap.Explainer(model)
-    X_scaled = scaler.transform(df_raw[attributes].fillna(0))
-    X_scaled_df = pd.DataFrame(X_scaled, index=df_raw.index, columns=attributes)
+    if not df_raw.empty:
+        explainer = shap.Explainer(model)
+        X_scaled = scaler.transform(df_raw[attributes].fillna(0))
+        X_scaled_df = pd.DataFrame(X_scaled, index=df_raw.index, columns=attributes)
 
-    player_skills = np.round(X_scaled_df[X_scaled_df.index.get_level_values('ID')==ID],3)
-    # player_skills['offense']  = 2
-    pred = model.predict_proba(player_skills)[0][1]
-    print("pred",pred)
-    from src.sport_analytics.model.eval import get_shap_plot_indv
+        player_skills = np.round(X_scaled_df[X_scaled_df.index.get_level_values('ID')==ID],3)
+        # player_skills['offense']  = 2
+        pred = model.predict_proba(player_skills)[0][1]
+        print("pred",pred)
+        from src.sport_analytics.model.eval import get_shap_plot_indv
 
 
-    player_shaps = get_shap_plot_indv(skills = player_skills,explainer=explainer)
-    player_df = pd.concat([df_raw.loc[player_skills.index.values[0]][attributes].T,player_shaps],axis=1)
-    print(player_df)
-
+        player_shaps = get_shap_plot_indv(skills = player_skills,explainer=explainer)
+        player_df = pd.concat([df_raw.loc[player_skills.index.values[0]][attributes].T,player_shaps],axis=1)
+        print(player_df)
+        return player_df
+    else:
+        print(f"ID {ID} does not exist")
+        return pd.DataFrame()

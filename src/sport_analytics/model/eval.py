@@ -4,7 +4,9 @@ import seaborn as sns
 from sklearn.preprocessing import StandardScaler
 import shap
 import numpy as np
-
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 
 def plot_correlation_heatmap(df):
     # Calculate the correlation matrix
@@ -106,3 +108,40 @@ def get_shap_plot_indv(skills,explainer):
         base_line = explainer.expected_value
     shap.plots.force(base_line, shap_indv, skills, matplotlib = True)
     return pd.DataFrame(shap_indv,index=skills.columns,columns=["shap"])
+
+
+
+
+
+def create_polar_plot(data_series, positive_color= '#5a7b6c', negative_color='#e34234'):
+    fig = plt.figure(figsize=(8, 6))
+    fig.patch.set_facecolor('black')  # Set background to black
+    ax = fig.add_subplot(111, projection="polar")
+    font_color = "white"
+    # Custom styles
+    ax.set_facecolor('black')  # Set clean black background
+
+    # Theta values
+    theta = np.arange(len(data_series)) / float(len(data_series)) * 2 * np.pi
+
+    # Values (absolute values)
+    values = np.abs(data_series.values)
+
+    # Define a color map based on positive/negative values
+    colors = [positive_color if value >= 0 else negative_color for value in data_series]
+
+    # Draw bars for each angle with no edges
+    ax.bar(theta, values, width=0.4, alpha=1, color=colors, align='center')
+
+    # Set tick labels
+    plt.xticks(theta, data_series.index, color=font_color, size=12, rotation=45)  # Rotate tick labels
+
+    # Set title and axis labels
+    plt.title("Skill Impact", fontsize=16, fontweight='bold', color=font_color)
+    ax.set_yticklabels([])  # Remove radial tick labels
+
+    # Add polar grid with light and white gridlines
+    ax.grid(False, color='white', linestyle='--', linewidth=0.1, alpha=0.7)
+
+    # Show the plot
+    plt.show()
