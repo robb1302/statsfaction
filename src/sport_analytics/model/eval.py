@@ -196,3 +196,57 @@ def plot_shap_summary(model,df):
     plt.show()
     # Delete the local file
     os.remove(shap_plot_filename)
+
+
+import mlflow
+import pandas as pd
+from sklearn.metrics import (
+    roc_auc_score,
+    precision_recall_curve,
+    auc,
+    accuracy_score,
+    precision_recall_fscore_support
+)
+
+def log_metrics_in_mlflow(y_test,y_prob,y_pred):
+
+    # Assuming y_test and y_pred are defined
+    precision_array, recall_array, thresholds = precision_recall_curve(y_test, y_pred)
+    area_under_curve_pr = auc(recall_array, precision_array)
+    
+    if y_prob is not None:
+        roc_auc = roc_auc_score(y_test, y_prob)
+    else:
+        roc_auc = None
+
+    accuracy = accuracy_score(y_test, y_pred)
+    # Calculate macro and micro scores
+    precision_macro, recall_macro, f1_macro, _ = precision_recall_fscore_support(y_test, y_pred, average='macro')
+    precision_micro, recall_micro, f1_micro, _ = precision_recall_fscore_support(y_test, y_pred, average='micro')
+
+    # Calculate precision, recall, and F1 for both positive and negative classes
+    precision_pos, recall_pos, f1_pos, _ = precision_recall_fscore_support(y_test, y_pred, labels=[1], average='binary')
+    precision_neg, recall_neg, f1_neg, _ = precision_recall_fscore_support(y_test, y_pred, labels=[0], average='binary')
+
+    # Log metrics
+    mlflow.log_metric("Accuracy", accuracy)
+    mlflow.log_metric("AUC", roc_auc)
+    mlflow.log_metric("PR_AUC", area_under_curve_pr)
+
+    mlflow.log_metric("Precision_Macro", precision_macro)
+    mlflow.log_metric("Recall_Macro", recall_macro)
+    mlflow.log_metric("F1_Macro", f1_macro)
+
+    mlflow.log_metric("Precision_Micro", precision_micro)
+    mlflow.log_metric("Recall_Micro", recall_micro)
+    mlflow.log_metric("F1_Micro", f1_micro)
+
+    mlflow.log_metric("Precision_Positive", precision_pos)
+    mlflow.log_metric("Recall_Positive", recall_pos)
+    mlflow.log_metric("F1_Positive", f1_pos)
+
+    mlflow.log_metric("Precision_Negative", precision_neg)
+    mlflow.log_metric("Recall_Negative", recall_neg)
+    mlflow.log_metric("F1_Negative", f1_neg)
+
+ 
