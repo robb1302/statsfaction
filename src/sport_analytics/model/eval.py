@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import mlflow 
+import os 
 
 def plot_correlation_heatmap(df):
     # Calculate the correlation matrix
@@ -78,6 +80,16 @@ def plot_feature_importance(model, title=None, top_n=10):
 
     # Set color of y-axis ticks to white
     plt.tick_params(axis='y', colors='white')
+    # Save the plot in memory using BytesIO
+    # Save the plot as a local file
+    plot_filename = "feature_importance_plot.png"
+    plt.savefig(plot_filename)
+    
+    # Log the local file as an artifact
+    mlflow.log_artifact(plot_filename, "feature_importance_plot.png")
+
+    # Delete the local file
+    os.remove(plot_filename)
 
     plt.show()
     return list(top_features['names'].values)
