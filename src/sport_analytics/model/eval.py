@@ -157,3 +157,44 @@ def create_polar_plot(data_series, positive_color= '#5a7b6c', negative_color='#e
 
     # Show the plot
     plt.show()
+
+
+import shap
+import scikitplot as skplt
+import mlflow
+def plot_auc_curves(y_true,y_proba):
+    skplt.metrics.plot_roc(y_true, y_proba)
+    
+    # Save the plot as a local file
+    roc_plot_filename = "roc_curve_plot.png"
+    plt.savefig(roc_plot_filename)
+    
+    # Log the local file as an artifact
+    mlflow.log_artifact(roc_plot_filename, "roc_curve_plot.png")
+
+    # Delete the local file
+    os.remove(roc_plot_filename)
+    plt.show()
+
+
+def plot_shap_summary(model,df):
+    explainer = shap.Explainer(model)
+    shap_values = explainer.shap_values(df)
+    # manche Modelle liefern shap values zu positiven und negativen Prediction
+    if len(shap_values)==2:
+        shap_values = shap_values[1]
+    # Create SHAP summary plot
+    shap.summary_plot(shap_values, df,show=False)
+    
+    # Save the SHAP summary plot as a local file
+    shap_plot_filename = "shap_summary_plot.png"
+    plt.savefig(shap_plot_filename)
+    
+
+    
+    # Log the local file as an artifact
+    mlflow.log_artifact(shap_plot_filename, "shap_summary_plot.png")
+    # Show the plot before logging it
+    plt.show()
+    # Delete the local file
+    os.remove(shap_plot_filename)
