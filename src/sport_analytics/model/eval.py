@@ -86,8 +86,7 @@ def plot_feature_importance(model, title=None, top_n=10):
     plt.savefig(plot_filename)
     
     # Log the local file as an artifact
-    mlflow.log_artifact(plot_filename, "feature_importance_plot.png")
-
+    mlflow.log_figure(figure=plt.gcf(), artifact_file="feature_importance_plot.png")
     # Delete the local file
     os.remove(plot_filename)
 
@@ -170,8 +169,7 @@ def plot_auc_curves(y_true,y_proba):
     plt.savefig(roc_plot_filename)
     
     # Log the local file as an artifact
-    mlflow.log_artifact(roc_plot_filename, "roc_curve_plot.png")
-
+    mlflow.log_figure(figure=plt.gcf(), artifact_file="roc_curve_plot.png")
     # Delete the local file
     os.remove(roc_plot_filename)
     plt.show()
@@ -193,7 +191,7 @@ def plot_shap_summary(model,df):
 
     
     # Log the local file as an artifact
-    mlflow.log_artifact(shap_plot_filename, "shap_summary_plot.png")
+    mlflow.log_figure(figure=plt.gcf(), artifact_file="shap_summary_plot.png")
     # Show the plot before logging it
     plt.show()
     # Delete the local file
