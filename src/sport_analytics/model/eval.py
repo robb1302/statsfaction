@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import mlflow 
 import os 
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+
 
 def plot_correlation_heatmap(df):
     # Calculate the correlation matrix
@@ -28,7 +30,7 @@ def plot_correlation_heatmap(df):
     # Show the plot
     plt.show()
 
-def plot_feature_importance(model, title=None, top_n=10):
+def plot_feature_importance(model, title=None, top_n=20):
     # Extract feature importances from the model
     if hasattr(model, 'feature_importances_'):
         feature_importances = model.feature_importances_
@@ -176,7 +178,10 @@ def plot_auc_curves(y_true,y_proba):
 
 
 def plot_shap_summary(model,df):
-    explainer = shap.Explainer(model)
+    try:
+        explainer = shap.Explainer(model)
+    except:
+        explainer = shap.KernelExplainer(model.predict, df)
     shap_values = explainer.shap_values(df)
     # manche Modelle liefern shap values zu positiven und negativen Prediction
     if len(shap_values)==2:
@@ -197,6 +202,27 @@ def plot_shap_summary(model,df):
     # Delete the local file
     os.remove(shap_plot_filename)
 
+def plot_shap_summary_regression(model,df):
+    explainer = shap.KernelExplainer(model=model,data=df)
+    shap_values = explainer.shap_values(df,nsamples = 10)
+    # manche Modelle liefern shap values zu positiven und negativen Prediction
+    if len(shap_values)==2:
+        shap_values = shap_values[1]
+    # Create SHAP summary plot
+    shap.summary_plot(shap_values, df,show=False)
+    
+    # Save the SHAP summary plot as a local file
+    shap_plot_filename = "shap_summary_plot.png"
+    plt.savefig(shap_plot_filename)
+    
+
+    
+    # Log the local file as an artifact
+    mlflow.log_figure(figure=plt.gcf(), artifact_file="shap_summary_plot.png")
+    # Show the plot before logging it
+    plt.show()
+    # Delete the local file
+    os.remove(shap_plot_filename)
 
 import mlflow
 import pandas as pd
@@ -226,27 +252,59 @@ def log_metrics_in_mlflow(y_test,y_prob,y_pred):
 
     # Calculate precision, recall, and F1 for both positive and negative classes
     precision_pos, recall_pos, f1_pos, _ = precision_recall_fscore_support(y_test, y_pred, labels=[1], average='binary')
-    precision_neg, recall_neg, f1_neg, _ = precision_recall_fscore_support(y_test, y_pred, labels=[0], average='binary')
+    precision_neg, recall_neg, f1_neg, _ = precision_recall_fscore_support(~y_test, y_pred<1, labels=[1], average='binary')
 
-    # Log metrics
-    mlflow.log_metric("Accuracy", accuracy)
-    mlflow.log_metric("AUC", roc_auc)
-    mlflow.log_metric("PR_AUC", area_under_curve_pr)
+    # Create a dictionary with metrics and their values
+    metrics_to_log = {
+        "Accuracy": accuracy,
+        "AUC": roc_auc,
+        "PR_AUC": area_under_curve_pr,
+        "Precision_Macro": precision_macro,
+        "Recall_Macro": recall_macro,
+        "F1_Macro": f1_macro,
+        "Precision_Micro": precision_micro,
+        "Recall_Micro": recall_micro,
+        "F1_Micro": f1_micro,
+        "Precision_Positive": precision_pos,
+        "Recall_Positive": recall_pos,
+        "F1_Positive": f1_pos,
+        "Precision_Negative": precision_neg,
+        "Recall_Negative": recall_neg,
+        "F1_Negative": f1_neg,
+    }
 
-    mlflow.log_metric("Precision_Macro", precision_macro)
-    mlflow.log_metric("Recall_Macro", recall_macro)
-    mlflow.log_metric("F1_Macro", f1_macro)
+    # Log metrics using log_metrics
+    mlflow.log_metrics(metrics_to_log)
 
-    mlflow.log_metric("Precision_Micro", precision_micro)
-    mlflow.log_metric("Recall_Micro", recall_micro)
-    mlflow.log_metric("F1_Micro", f1_micro)
 
-    mlflow.log_metric("Precision_Positive", precision_pos)
-    mlflow.log_metric("Recall_Positive", recall_pos)
-    mlflow.log_metric("F1_Positive", f1_pos)
+def log_feature_list_as_artifact(features, filename="feature_list.txt"):
+    try:
+        # Convert the list to a string
+        features_str = "\n".join(map(str, features))
 
-    mlflow.log_metric("Precision_Negative", precision_neg)
-    mlflow.log_metric("Recall_Negative", recall_neg)
-    mlflow.log_metric("F1_Negative", f1_neg)
+        # Save the string to a text file
+        with open(filename, 'w') as file:
+            file.write(features_str)
 
- 
+        # Log the text file as an artifact
+        mlflow.log_artifact(filename, artifact_path="artifacts")
+
+    finally:
+        # Delete the local file, whether an exception occurs or not
+        os.remove(filename)
+
+
+def log_metrics_in_mlflow_regression(y_test, y_pred):
+    mse = mean_squared_error(y_test, y_pred)
+    mae = mean_absolute_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+
+    # Create a dictionary with metrics and their values
+    metrics_to_log = {
+        "Mean Squared Error": mse,
+        "Mean Absolute Error": mae,
+        "R2 Score": r2,
+    }
+
+    # Log metrics using log_metrics
+    mlflow.log_metrics(metrics_to_log)

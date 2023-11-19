@@ -21,7 +21,7 @@ def add_features_raw_datadf_raw(df_raw):
     df_raw['Speed'] =  (df_raw['Acceleration'] + df_raw['SprintSpeed'])/2
     df_raw['ball_handling'] = (df_raw['Balance']+df_raw['Agility']+df_raw['Dribbling'] +df_raw['BallControl']*2 )/5
     
-    for attribut in ['Reactions',"physique",'shooting_technique','Stamina','Positioning','Vision','Finishing','Stamina','BallControl']:
+    for attribut in ['Reactions',"physique",'shooting_technique','Stamina','Positioning','Vision','Finishing','Stamina','BallControl','shooting']:
         df_raw[f'age_based_{attribut}'] = df_raw[attribut] - df_raw.groupby(['FIFA','Age'])[attribut].transform('mean')
         # df_raw[f'{attribut}'] = df_raw[attribut] - df_raw.groupby(['FIFA','Age'])[attribut].transform('mean')
    
