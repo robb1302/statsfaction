@@ -219,13 +219,16 @@ from sklearn.metrics import (
 def log_metrics_in_mlflow(y_test,y_prob,y_pred):
 
     # Assuming y_test and y_pred are defined
-    precision_array, recall_array, thresholds = precision_recall_curve(y_test, y_pred)
-    area_under_curve_pr = auc(recall_array, precision_array)
-    
+    if y_prob is not None:
+        precision_array, recall_array, thresholds = precision_recall_curve(y_test, y_pred)
+        area_under_curve_pr = auc(recall_array, precision_array)
+    else:
+        area_under_curve_pr = 0.5    
+
     if y_prob is not None:
         roc_auc = roc_auc_score(y_test, y_prob)
     else:
-        roc_auc = None
+        roc_auc = 0.5
 
     accuracy = accuracy_score(y_test, y_pred)
     # Calculate macro and micro scores
