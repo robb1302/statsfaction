@@ -1,6 +1,6 @@
 
 
-
+TRAINED_MODELS = "C:/Users/Robert/Documents/Projekte/dev/statsfaction/data/sport_analytics/model"
 
 FEATURE_MAPPING = {
     'ID': 'ID',
