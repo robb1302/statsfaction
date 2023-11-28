@@ -279,17 +279,66 @@ def log_feature_list_as_artifact(features, filename="feature_list.txt"):
         os.remove(filename)
 
 
-def log_metrics_in_mlflow_regression(y_test, y_pred):
+def log_metrics_in_mlflow_regression(y_test, y_pred,X=None):
     mse = mean_squared_error(y_test, y_pred)
     mae = mean_absolute_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
-
+    wmpe = calculate_weighted_mape(y_true=y_test,y_pred=y_pred)
+    ar2 =calculate_adjusted_r_squared(X=X,y=y_test)
+    mpe =calculate_mape(y_true=y_test,y_pred=y_pred)
     # Create a dictionary with metrics and their values
     metrics_to_log = {
         "Mean Squared Error": mse,
         "Mean Absolute Error": mae,
         "R2 Score": r2,
+        "adjusted R2 Score": ar2,
+        "Weighted Mean Percentage Error":wmpe,
+        "Mean Percentage Error":mpe,
+
     }
 
     # Log metrics using log_metrics
     mlflow.log_metrics(metrics_to_log)
+
+
+import numpy as np
+import statsmodels.api as sm
+from sklearn.model_selection import train_test_split
+
+def calculate_mape(y_true, y_pred):
+    try:
+        mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+        if np.isnan(mape):
+            raise ValueError("MAPE is undefined when y_true contains zero values.")
+        return mape
+    except Exception as e:
+        print(f"Error in calculate_mape: {e}")
+        return None
+
+def calculate_adjusted_r_squared(X, y):
+    try:
+        X = sm.add_constant(X)
+        model = sm.OLS(y, X).fit()
+        adjusted_r_squared = 1 - (1 - model.rsquared) * (len(y) - 1) / (len(y) - len(X.columns) - 1)
+        if np.isnan(adjusted_r_squared):
+            raise ValueError("Adjusted R-squared is undefined. Check the number of samples and features.")
+        return adjusted_r_squared
+    except Exception as e:
+        print(f"Error in calculate_adjusted_r_squared: {e}")
+        return None
+
+def calculate_weighted_mape(y_true, y_pred, penalty_factor=2):
+    try:
+        errors = y_true - y_pred
+        absolute_percentage_errors = np.abs(errors / y_true)
+        
+        # Apply a higher penalty for underestimation
+        weighted_errors = np.where(errors < 0, penalty_factor * absolute_percentage_errors, absolute_percentage_errors)
+        
+        weighted_mape = np.mean(weighted_errors) * 100
+        if np.isnan(weighted_mape):
+            raise ValueError("Weighted MAPE is undefined when y_true contains zero values.")
+        return weighted_mape
+    except Exception as e:
+        print(f"Error in calculate_weighted_mape: {e}")
+        return None
