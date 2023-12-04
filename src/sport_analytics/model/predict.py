@@ -28,23 +28,21 @@ def predict_and_explain_players(df_raw,attributes,model,scaler):
     return shaps.join(prospects).sort_values('prediction',ascending=False)
 
 
-def analyze_individual_ID(ID,df_raw,attributes,model,scaler):
+def analyze_individual_ID(ID,df_raw,attributes,model,scaler,explainer):
     
 
     df_raw = add_features_raw_datadf_raw(df_raw)
     df_raw = df_raw[df_raw.index.get_level_values('ID') == ID]   
-    X_scaled = scaler.transform(df_raw[attributes].fillna(0))
-    X_scaled_df = pd.DataFrame(X_scaled, index=df_raw.index, columns=attributes)
+    X_scaled = scaler.transform(df_raw[scaler.feature_names_in_].fillna(0))
+    X_scaled_df = pd.DataFrame(X_scaled, index=df_raw.index, columns=scaler.feature_names_in_)[attributes]
 
     player_skills = np.round(X_scaled_df[X_scaled_df.index.get_level_values('ID')==ID],3)
 
 
     if not player_skills.empty:
         try:
-            explainer = shap.Explainer(model)
             pred = model.predict_proba(player_skills)[0][1]
         except:
-            explainer = shap.KernelExplainer(model.predict, X_scaled_df)
             pred = model.predict(player_skills)
         # player_skills['offense']  = 2
 

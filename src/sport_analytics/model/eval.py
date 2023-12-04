@@ -114,7 +114,7 @@ def get_shap_plot_indv(skills,explainer):
     shap_skills = explainer.shap_values(skills)
     if len(shap_skills)!=1:
         shap_skills = shap_skills[1]
-    shap_indv = np.round(shap_skills*100,2)[0]
+    shap_indv = np.round(shap_skills,2)[0]
     if not (type(explainer.expected_value) == np.float32 or  type(explainer.expected_value) == float):
         base_line = explainer.expected_value[1]
     else:
@@ -204,6 +204,7 @@ def plot_shap_summary(model,df,K=25):
     plt.show()
     # Delete the local file
     os.remove(shap_plot_filename)
+    return explainer
 
 
 import mlflow

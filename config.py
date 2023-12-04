@@ -43,4 +43,4 @@ FEATURE_MAPPING = {
     'DefensiveAwareness': 'DefensiveAwareness'
 }
 
-plot_feature_mapping = {"age_based_Stamina": "Stamina","FKAccuracy":"Free Kick Accuracy","ShortPassing":"Short Passing","BallControl":"Ball Control","ShotPower":"Shot Power","SprintSpeed":"Sprint Speed"}
+plot_feature_mapping = {"HeadingAccuracy": "Heading Accuracy","FKAccuracy":"Free Kick Accuracy","ShortPassing":"Short Passing","BallControl":"Ball Control","ShotPower":"Shot Power","SprintSpeed":"Sprint Speed"}
