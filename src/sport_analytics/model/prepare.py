@@ -1,5 +1,7 @@
 import pandas as pd
-
+from sklearn.feature_selection import SelectFromModel
+from sklearn.feature_selection import SequentialFeatureSelector   
+ 
 def add_features_raw_datadf_raw(df_raw):
     df_raw = df_raw.set_index(['ID','Name','FIFA'])
     best_pos = lambda x: x.split(',')[0]
@@ -26,3 +28,19 @@ def add_features_raw_datadf_raw(df_raw):
         # df_raw[f'{attribut}'] = df_raw[attribut] - df_raw.groupby(['FIFA','Age'])[attribut].transform('mean')
    
     return df_raw
+
+def select_features(method,X,y,model):
+
+    # featres = X_train_scaled_df.columns
+    if method == 'AUTO':
+        sfm = SelectFromModel(model).fit(X, y)
+        features = X.columns[sfm.get_support()]
+    elif method in  ['backward','forward']:
+
+        sfm = SequentialFeatureSelector(
+            model, direction=method
+        ).fit(X, y)
+        features = X.columns[sfm.get_support()]
+    else:
+        features = X.columns
+    return features  
