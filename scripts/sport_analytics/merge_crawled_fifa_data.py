@@ -65,7 +65,7 @@ def main(fifa_versions):
 
 
 if __name__ == "__main__":
-    DEFAULT_FIFA_VERSIONS = "17"
+    DEFAULT_FIFA_VERSIONS = "24"
     # DEFAULT_FIFA_VERSIONS = "12"
     find_and_append_module_path()
     

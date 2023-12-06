@@ -54,13 +54,14 @@ def main(fifa_versions):
                 
                 while (attributes.shape[1]<=1):
                     
-                    soup = get_fifa_soup(id = id,FIFA=FIFA)
+                    soup = get_fifa_soup(id = id,FIFA=FIFA,version="01")
                     attributes = extract_attributes(soup, id)
                     counter = counter + 1
                     
                     if counter>1:
                         # print("something went wrong")
                         time.sleep(2)
+
                 if counter >1:
                     print(id,counter)
                
@@ -77,7 +78,7 @@ def main(fifa_versions):
         master_data.to_csv(f"data/sport_analytics/raw/FIFA_{FIFA}.csv")
 
 if __name__ == "__main__":
-    DEFAULT_FIFA_VERSIONS = "12"
+    DEFAULT_FIFA_VERSIONS = "24"
     DEFAULT_OFFSETS = 300
     
     find_and_append_module_path()

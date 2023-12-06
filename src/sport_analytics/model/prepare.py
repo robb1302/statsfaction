@@ -4,13 +4,11 @@ from sklearn.feature_selection import SequentialFeatureSelector
  
 def add_features_raw_datadf_raw(df_raw):
     df_raw = df_raw.set_index(['ID','Name','FIFA'])
-    best_pos = lambda x: x.split(',')[0]
+    
+
 
     # Apply the lambda function to add best position
-    df_raw["best_position"] = df_raw['Position'].apply(best_pos)
-    df_raw["best_position"].value_counts()
-    encoded_pos = pd.read_csv("src/sport_analytics/utils/position_mapping.csv")
-    df_raw = pd.merge(df_raw.reset_index(), encoded_pos, left_on='best_position', right_on='best_position', how='inner')
+    df_raw = add_best_position(df_raw)
     df_raw = df_raw.set_index(['ID','Name','FIFA'])
     df_raw['Defense'] =  df_raw['Defensive awareness'].fillna(0)+df_raw['Marking'].fillna(0)
     df_raw["overall_age_ratio"] = df_raw.Overall/(df_raw.Age**2)
@@ -27,6 +25,14 @@ def add_features_raw_datadf_raw(df_raw):
         df_raw[f'age_based_{attribut}'] = df_raw[attribut] - df_raw.groupby(['Age'])[attribut].transform('mean')
         # df_raw[f'{attribut}'] = df_raw[attribut] - df_raw.groupby(['FIFA','Age'])[attribut].transform('mean')
    
+    return df_raw
+
+def add_best_position(df_raw):
+    best_pos = lambda x: x.split(',')[0]
+    df_raw["best_position"] = df_raw['Position'].apply(best_pos)
+    df_raw["best_position"].value_counts()
+    encoded_pos = pd.read_csv("src/sport_analytics/utils/position_mapping.csv")
+    df_raw = pd.merge(df_raw.reset_index(), encoded_pos, left_on='best_position', right_on='best_position', how='inner')
     return df_raw
 
 def select_features(method,X,y,model):

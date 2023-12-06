@@ -53,15 +53,17 @@ def main(fifa_versions,offsets):
         print("#######FIFA",FIFA,"#######")
         data = DataFrame(columns=fifa_id_columns)
 
-        for offset in tqdm(range(offsets)):
-            url = base_url + str(offset*80)+f"&r={FIFA}0001&set=true"
-            source_code = requests.get(url, headers=headers)
-            plain_text = source_code.text
+        for version in ['02','15']:
+            for offset in tqdm(range(offsets)):
+                url = base_url + str(offset*80)+f"&r={FIFA}00{version}&set=true"
+                source_code = requests.get(url, headers=headers)
+                plain_text = source_code.text
 
-            player_data = download_player_id(html_content=plain_text, columns=fifa_id_columns)
-            data = pd.concat([data, player_data], axis=0)
-            offset+=1
-        data = data.drop_duplicates()
+                player_data = download_player_id(html_content=plain_text, columns=fifa_id_columns)
+                data = pd.concat([data, player_data], axis=0)
+                offset+=1
+        
+        data = data.drop_duplicates("ID")
         data.to_csv(f'data/sport_analytics/raw/full_player_data_{FIFA}.csv', encoding='utf-8')
 
     print("Done")
@@ -69,7 +71,7 @@ def main(fifa_versions,offsets):
 if __name__ == "__main__":
 
     # Define default values
-    DEFAULT_FIFA_VERSIONS = "12"
+    DEFAULT_FIFA_VERSIONS = "24"
     DEFAULT_OFFSETS = 300
 
     find_and_append_module_path()
